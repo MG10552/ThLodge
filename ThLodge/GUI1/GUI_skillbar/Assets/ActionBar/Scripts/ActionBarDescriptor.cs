@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionBarDescriptor
-{
+
+public class ActionBarDescriptor {
     int stack = 0;
     bool disabled = false;
     float cooldown = 0f;
@@ -19,76 +19,61 @@ public class ActionBarDescriptor
     public HashSet<ActionBarButton> Buttons = new HashSet<ActionBarButton>();
     public UnityEngine.AudioClip PressAudioClip = null;
 
-    public int Stack
-    {
+    public int Stack {
         get { return stack; }
-        set
-        {
+        set {
             value = UnityEngine.Mathf.Clamp(value, 0, int.MaxValue);
 
-            if (Stackable && stack != value)
-            {
+            if (Stackable && stack != value) {
                 stack = value;
 
-                foreach (ActionBarButton button in Buttons)
-                {
+                foreach (ActionBarButton button in Buttons) {
                     button.Stack = stack;
                 }
 
-                if (stack == 0 && !disabled)
-                {
+                if (stack == 0 && !disabled) {
                     Disabled = true;
                 }
-                
-                if(stack > 0 && disabled)
-                {
+
+                if (stack > 0 && disabled) {
                     Disabled = false;
                 }
             }
         }
     }
 
-    public bool Disabled
-    {
+    public bool Disabled {
         get { return disabled; }
-        set
-        {
+        set {
             disabled = value;
 
-            foreach (ActionBarButton button in Buttons)
-            {
+            foreach (ActionBarButton button in Buttons) {
                 button.SetGrayscale(disabled ? 1f : 0f);
             }
         }
     }
 
-    public float Cooldown
-    {
+    public float Cooldown {
         get { return cooldown; }
-        set
-        {
+        set {
             cooldown = value;
             cooldownStart = UnityEngine.Time.time;
 
-            foreach (ActionBarButton button in Buttons)
-            {
+            foreach (ActionBarButton button in Buttons) {
                 button.SetCooldown(cooldownStart, cooldown);
             }
         }
     }
 
-    public float CooldownStart
-    {
+    public float CooldownStart {
         get { return cooldownStart; }
     }
 
-    public float CooldownRemaining
-    {
+    public float CooldownRemaining {
         get { return cooldown - (UnityEngine.Time.time - cooldownStart); }
     }
 
-    public bool OnCooldown
-    {
+    public bool OnCooldown {
         get { return (UnityEngine.Time.time - cooldownStart) < cooldown; }
     }
 }

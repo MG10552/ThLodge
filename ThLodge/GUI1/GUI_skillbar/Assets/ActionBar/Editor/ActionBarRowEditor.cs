@@ -3,18 +3,16 @@ using System.Collections;
 using UnityEditor;
 using System.Linq;
 
+
 [CustomEditor(typeof(ActionBarRow))]
-public class ActionBarRowEditor : Editor
-{
+public class ActionBarRowEditor: Editor {
     static ActionBarRow previous;
     static bool[] keysToggled;
 
-    public override void OnInspectorGUI()
-    {
+    public override void OnInspectorGUI() {
         ActionBarRow row = target as ActionBarRow;
 
-        if (row == null)
-        {
+        if (row == null) {
             return;
         }
 
@@ -51,10 +49,8 @@ public class ActionBarRowEditor : Editor
         int buttonSettingsLength = buttonRows.Value * buttonColumns.Value;
 
         // If we're playing, don't allow editing button settings length
-        if (Application.isPlaying)
-        {
-            if (buttonSettingsLength != buttonSettings.Value.Length)
-            {
+        if (Application.isPlaying) {
+            if (buttonSettingsLength != buttonSettings.Value.Length) {
                 Debug.LogWarning("Can't edit button count while playing");
             }
 
@@ -64,8 +60,7 @@ public class ActionBarRowEditor : Editor
         isLocked.Value = EditorGUILayout.Toggle("Locked", isLocked.Value);
         cloneOnPickup.Value = EditorGUILayout.Toggle("Clone on pickup", cloneOnPickup.Value);
 
-        if (cloneOnPickup.Value)
-        {
+        if (cloneOnPickup.Value) {
             removeCloneWithinGroup.Value = EditorGUILayout.Toggle("De-Clone Within Group", removeCloneWithinGroup.Value);
         }
 
@@ -79,41 +74,32 @@ public class ActionBarRowEditor : Editor
         int excludeGroupsLength = EditorGUILayout.IntField(excludeGroups.Value.Length);
         EditorGUILayout.EndHorizontal();
 
-        if (excludeGroups.Value.Length != excludeGroupsLength)
-        {
+        if (excludeGroups.Value.Length != excludeGroupsLength) {
             int[] excludeArray = new int[excludeGroupsLength];
             System.Array.Copy(excludeGroups.Value, excludeArray, Mathf.Min(excludeGroups.Value.Length, excludeArray.Length));
 
-            if (excludeArray.Length > excludeGroups.Value.Length)
-            {
-                for (int i = excludeGroups.Value.Length; i < excludeArray.Length; ++i)
-                {
+            if (excludeArray.Length > excludeGroups.Value.Length) {
+                for (int i = excludeGroups.Value.Length; i < excludeArray.Length; ++i) {
                     excludeArray[i] = -1;
                 }
             }
-
             excludeGroups.Value = excludeArray;
         }
 
-        for (int i = 0; i < excludeGroups.Value.Length; ++i)
-        {
+        for (int i = 0; i < excludeGroups.Value.Length; ++i) {
             excludeGroups.Value[i] = EditorGUILayout.IntField(excludeGroups.Value[i]);
         }
 
         // Button settings
-
-        if (buttonSettingsLength != buttonSettings.Value.Length)
-        {
+        if (buttonSettingsLength != buttonSettings.Value.Length) {
             var settingsArray = buttonSettings.Value;
 
             // Resize array
             System.Array.Resize(ref settingsArray, buttonSettingsLength);
 
             // Initialize all values
-            for (int i = 0; i < buttonSettingsLength; ++i)
-            {
-                if (settingsArray[i] == null)
-                {
+            for (int i = 0; i < buttonSettingsLength; ++i) {
+                if (settingsArray[i] == null) {
                     settingsArray[i] = new ActionBarButtonSettings();
                 }
             }
@@ -125,18 +111,15 @@ public class ActionBarRowEditor : Editor
             System.Array.Resize(ref keysToggled, buttonSettingsLength);
         }
 
-        if (row != previous)
-        {
+        if (row != previous) {
             previous = row;
             keysToggled = new bool[buttonSettingsLength];
         }
 
-        for (int i = 0; i < buttonSettingsLength; ++i)
-        {
+        for (int i = 0; i < buttonSettingsLength; ++i) {
             var keyCombo = buttonSettings.Value[i];
 
-            if (keysToggled[i] = EditorGUILayout.Foldout(keysToggled[i], "Button " + i + " key bindings"))
-            {
+            if (keysToggled[i] = EditorGUILayout.Foldout(keysToggled[i], "Button " + i + " key bindings")) {
                 //EditorGUILayout.LabelField("Button #" + i, EditorStyles.boldLabel);
                 EditorGUILayout.LabelField("Primary", EditorStyles.miniBoldLabel);
                 keyCombo.PrimaryKey = (KeyCode)EditorGUILayout.EnumPopup("Key", keyCombo.PrimaryKey);
@@ -149,46 +132,39 @@ public class ActionBarRowEditor : Editor
         }
 
         // Override label font settings
-
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Override Label Font");
         labelOverrideFont.Value = EditorGUILayout.Toggle(labelOverrideFont.Value);
         EditorGUILayout.EndHorizontal();
 
-        if (labelOverrideFont.Value)
-        {
+        if (labelOverrideFont.Value) {
             labelFontSize.Value = EditorGUILayout.FloatField("Label Font Size", labelFontSize.Value);
             labelFontPosition.Value = EditorGUILayout.Vector2Field("Label Font Position", labelFontPosition.Value);
         }
 
         // Override stack font settings
-
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Override Stack Font");
         stackOverrideFont.Value = EditorGUILayout.Toggle(stackOverrideFont.Value);
         EditorGUILayout.EndHorizontal();
 
-        if (stackOverrideFont.Value)
-        {
+        if (stackOverrideFont.Value) {
             stackFontSize.Value = EditorGUILayout.FloatField("Stack Font Size", stackFontSize.Value);
             stackFontPosition.Value = EditorGUILayout.Vector2Field("Stack Font Position", stackFontPosition.Value);
         }
 
         // Anchor
-
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Anchor");
         anchor.Value = EditorGUILayout.Toggle(anchor.Value);
         EditorGUILayout.EndHorizontal();
 
-        if (anchor.Value)
-        {
+        if (anchor.Value) {
             anchorPoint.Value = (ActionBarRowAnchorPoint)EditorGUILayout.EnumPopup("Point", anchorPoint.Value);
             anchorOffset.Value = EditorGUILayout.Vector2Field("Offset", anchorOffset.Value);
         }
 
-        if (GUI.changed)
-        {
+        if (GUI.changed) {
             EditorUtility.SetDirty(row);
         }
     }

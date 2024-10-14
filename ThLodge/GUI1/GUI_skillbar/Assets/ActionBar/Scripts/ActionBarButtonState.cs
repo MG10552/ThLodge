@@ -1,5 +1,4 @@
-public enum ActionBarButtonState
-{
+public enum ActionBarButtonState {
     Empty,
     Normal,
     Active

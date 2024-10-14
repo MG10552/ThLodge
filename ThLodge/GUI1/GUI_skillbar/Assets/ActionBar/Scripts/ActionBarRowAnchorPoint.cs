@@ -1,5 +1,4 @@
-public enum ActionBarRowAnchorPoint
-{
+public enum ActionBarRowAnchorPoint {
     TopLeft,
     TopCenter,
     TopRight,

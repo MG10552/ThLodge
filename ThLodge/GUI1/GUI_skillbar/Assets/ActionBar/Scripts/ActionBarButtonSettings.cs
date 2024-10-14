@@ -1,35 +1,28 @@
 using UnityEngine;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
+
 
 [System.Serializable]
-public class ActionBarButtonSettings
-{
+public class ActionBarButtonSettings {
     public KeyCode PrimaryKey;
     public ActionBarModifierKeys PrimaryModifiers;
 
     public KeyCode SecondaryKey;
     public ActionBarModifierKeys SecondaryModifiers;
 
-    public override string ToString()
-    {
+    public override string ToString() {
         string result = "";
 
-        if (PrimaryKey != KeyCode.None)
-        {
+        if (PrimaryKey != KeyCode.None) {
             result = (ToString(PrimaryModifiers) + ToString(PrimaryKey));
-        }
-        else if (SecondaryKey != KeyCode.None)
-        {
+        } else if (SecondaryKey != KeyCode.None) {
             result = (ToString(SecondaryModifiers) + ToString(SecondaryKey));
         }
 
-        if (result.Length > ActionBarSettings.Instance.MaxLabelCharacters)
-        {
-            if (PrimaryKey != KeyCode.None)
-            {
+        if (result.Length > ActionBarSettings.Instance.MaxLabelCharacters) {
+            if (PrimaryKey != KeyCode.None) {
                 return "..." + ToString(PrimaryKey);
-            }
-            else if (SecondaryKey != KeyCode.None)
-            {
+            } else if (SecondaryKey != KeyCode.None) {
                 return "..." + ToString(SecondaryKey);
             }
         }
@@ -37,10 +30,8 @@ public class ActionBarButtonSettings
         return result;
     }
 
-    string ToString(KeyCode key)
-    {
-        switch (key)
-        {
+    string ToString(KeyCode key) {
+        switch (key) {
             case KeyCode.Alpha0:
             case KeyCode.Alpha1:
             case KeyCode.Alpha2:
@@ -79,32 +70,26 @@ public class ActionBarButtonSettings
         }
     }
 
-    string ToString(ActionBarModifierKeys mod)
-    {
+    string ToString(ActionBarModifierKeys mod) {
         string result = "";
 
-        if (((mod & ActionBarModifierKeys.LeftAlt) == ActionBarModifierKeys.LeftAlt) || ((mod & ActionBarModifierKeys.RightAlt) == ActionBarModifierKeys.RightAlt))
-        {
+        if (((mod & ActionBarModifierKeys.LeftAlt) == ActionBarModifierKeys.LeftAlt) || ((mod & ActionBarModifierKeys.RightAlt) == ActionBarModifierKeys.RightAlt)) {
             result += "A-";
         }
 
-        if (((mod & ActionBarModifierKeys.LeftShift) == ActionBarModifierKeys.LeftShift) || ((mod & ActionBarModifierKeys.RightShift) == ActionBarModifierKeys.RightShift))
-        {
+        if (((mod & ActionBarModifierKeys.LeftShift) == ActionBarModifierKeys.LeftShift) || ((mod & ActionBarModifierKeys.RightShift) == ActionBarModifierKeys.RightShift)) {
             result += "S-";
         }
 
-        if (((mod & ActionBarModifierKeys.LeftCtrl) == ActionBarModifierKeys.LeftCtrl) || ((mod & ActionBarModifierKeys.RightCtrl) == ActionBarModifierKeys.RightCtrl))
-        {
+        if (((mod & ActionBarModifierKeys.LeftCtrl) == ActionBarModifierKeys.LeftCtrl) || ((mod & ActionBarModifierKeys.RightCtrl) == ActionBarModifierKeys.RightCtrl)) {
             result += "C-";
         }
 
-        if (((mod & ActionBarModifierKeys.LeftApple) == ActionBarModifierKeys.LeftApple) || ((mod & ActionBarModifierKeys.RightApple) == ActionBarModifierKeys.RightApple))
-        {
+        if (((mod & ActionBarModifierKeys.LeftApple) == ActionBarModifierKeys.LeftApple) || ((mod & ActionBarModifierKeys.RightApple) == ActionBarModifierKeys.RightApple)) {
             result += "Cm";
         }
 
-        if (((mod & ActionBarModifierKeys.LeftWindows) == ActionBarModifierKeys.LeftWindows) || ((mod & ActionBarModifierKeys.RightWindows) == ActionBarModifierKeys.RightWindows))
-        {
+        if (((mod & ActionBarModifierKeys.LeftWindows) == ActionBarModifierKeys.LeftWindows) || ((mod & ActionBarModifierKeys.RightWindows) == ActionBarModifierKeys.RightWindows)) {
             result += "W-";
         }
 

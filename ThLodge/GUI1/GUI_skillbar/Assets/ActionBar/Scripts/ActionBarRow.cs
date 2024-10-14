@@ -2,9 +2,12 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using static System.Net.Mime.MediaTypeNames;
+using System.Diagnostics;
+using System.Resources;
 
-public class ActionBarRow : MonoBehaviour
-{
+
+public class ActionBarRow : MonoBehaviour {
     Mesh quad = null;
     ActionBarButton[] buttons = new ActionBarButton[0];
     List<Action<ActionBarRow>> initCallbacks = new List<Action<ActionBarRow>>();
@@ -69,66 +72,53 @@ public class ActionBarRow : MonoBehaviour
     [SerializeField]
     int[] excludeGroups = new int[0];
 
-    public Mesh Quad
-    {
+    public Mesh Quad {
         get { return quad; }
     }
 
-    public int ItemGroup
-    {
+    public int ItemGroup {
         get { return itemGroup; }
     }
 
-    public int ButtonSize
-    {
+    public int ButtonSize {
         get { return buttonSize; }
     }
 
-    public int Layer
-    {
+    public int Layer {
         get { return gameObject.layer; }
     }
 
-    public float LabelFontSize
-    {
+    public float LabelFontSize {
         get { return labelOverrideFont ? labelFontSize : ActionBarSettings.Instance.LabelFontSize; }
     }
 
-    public Vector3 LabelFontPosition
-    {
+    public Vector3 LabelFontPosition {
         get { return labelOverrideFont ? labelFontPosition : ActionBarSettings.Instance.LabelFontPosition; }
     }
 
-    public float StackFontSize
-    {
+    public float StackFontSize {
         get { return stackOverrideFont ? stackFontSize : ActionBarSettings.Instance.StackFontSize; }
     }
 
-    public Vector3 StackFontPosition
-    {
+    public Vector3 StackFontPosition {
         get { return stackOverrideFont ? stackFontPosition : ActionBarSettings.Instance.StackFontPosition; }
     }
 
-    public bool IsLocked
-    {
+    public bool IsLocked {
         get { return isLocked; }
         set { isLocked = value; }
     }
 
-    public bool CloneOnPickup
-    {
+    public bool CloneOnPickup {
         get { return cloneOnPickup; }
     }
 
-    public bool RemoveCloneWithinGroup
-    {
+    public bool RemoveCloneWithinGroup {
         get { return removeCloneWithinGroup; }
     }
 
-    public ActionBarDescriptor SetButton(int buttonIndex, ActionBarDescriptor descriptor)
-    {
-        if (buttonIndex >= buttons.Length)
-        {
+    public ActionBarDescriptor SetButton(int buttonIndex, ActionBarDescriptor descriptor) {
+        if (buttonIndex >= buttons.Length) {
             Debug.LogError("buttonIndex out of range");
             return null;
         }
@@ -136,41 +126,32 @@ public class ActionBarRow : MonoBehaviour
         return buttons[buttonIndex].SetDescriptor(descriptor);
     }
 
-    public void AddInitCallback(System.Action<ActionBarRow> callback)
-    {
-        if (buttons.Length != buttonSettings.Length)
-        {
+    public void AddInitCallback(System.Action<ActionBarRow> callback) {
+        if (buttons.Length != buttonSettings.Length) {
             initCallbacks.Add(callback);
-        }
-        else
-        {
+
+        } else {
             callback(this);
         }
     }
 
-    public bool Excludes(int group)
-    {
+    public bool Excludes(int group) {
         return excludeGroups.Contains(group);
     }
 
-    int Width
-    {
-        get
-        {
+    int Width {
+        get {
             return (buttonSize * buttonColumns) + Mathf.Clamp((buttonColumnSpacing * (buttonColumns - 1)), 0, int.MaxValue);
         }
     }
 
-    int Height
-    {
-        get
-        {
+    int Height {
+        get {
             return (buttonSize * buttonRows) + Mathf.Clamp((buttonColumnSpacing * (buttonRows - 1)), 0, int.MaxValue);
         }
     }
 
-    void Start()
-    {
+    void Start() {
         quad = Resources.Load("ActionBarButtonQuad", typeof(Mesh)) as Mesh;
 
         InitButtons();
@@ -179,24 +160,20 @@ public class ActionBarRow : MonoBehaviour
         Update();
 
         // Call on-init callbacks
-        foreach (System.Action<ActionBarRow> callback in initCallbacks)
-        {
+        foreach (System.Action<ActionBarRow> callback in initCallbacks) {
             callback(this);
         }
 
         initCallbacks.Clear();
     }
 
-    void Update()
-    {
+    void Update() {
         Vector2 position = Vector2.zero;
 
-        if (anchor)
-        {
+        if (anchor) {
             position = CalculateAnchorScreenPosition();
-        }
-        else
-        {
+
+        } else {
             position = transform.position;
         }
 
@@ -204,45 +181,33 @@ public class ActionBarRow : MonoBehaviour
 
         // Check button presses
 
-        for (int i = 0; i < Mathf.Min(buttonSettings.Length, buttons.Length); ++i)
-        {
+        for (int i = 0; i < Mathf.Min(buttonSettings.Length, buttons.Length); ++i) {
             ActionBarButton b = buttons[i];
             ActionBarButtonSettings k = buttonSettings[i];
 
-            if (k != null && b != null)
-            {
-                if (Input.GetKeyDown(k.PrimaryKey) && ActionBarInput.CheckModifierKeys_Down(k.PrimaryModifiers))
-                {
+            if (k != null && b != null) {
+                if (Input.GetKeyDown(k.PrimaryKey) && ActionBarInput.CheckModifierKeys_Down(k.PrimaryModifiers)) {
                     b.Overlay = true;
-                }
-                else if (Input.GetKeyDown(k.SecondaryKey) && ActionBarInput.CheckModifierKeys_Down(k.SecondaryModifiers))
-                {
+                } else if (Input.GetKeyDown(k.SecondaryKey) && ActionBarInput.CheckModifierKeys_Down(k.SecondaryModifiers)) {
                     b.Overlay = true;
-                }
-                else if (Input.GetKeyUp(k.PrimaryKey) && ActionBarInput.CheckModifierKeys_Up(k.PrimaryModifiers))
-                {
+                } else if (Input.GetKeyUp(k.PrimaryKey) && ActionBarInput.CheckModifierKeys_Up(k.PrimaryModifiers)) {
                     b.Press();
-                }
-                else if (Input.GetKeyUp(k.SecondaryKey) && ActionBarInput.CheckModifierKeys_Up(k.SecondaryModifiers))
-                {
+                } else if (Input.GetKeyUp(k.SecondaryKey) && ActionBarInput.CheckModifierKeys_Up(k.SecondaryModifiers)) {
                     b.Press();
                 }
 
-                if (!b.Pressed && !Input.GetKey(k.PrimaryKey) && !Input.GetKey(k.SecondaryKey))
-                {
+                if (!b.Pressed && !Input.GetKey(k.PrimaryKey) && !Input.GetKey(k.SecondaryKey)) {
                     b.Overlay = false;
                 }
             }
         }
     }
 
-    void SetPosition(int x, int y)
-    {
+    void SetPosition(int x, int y) {
         float fx = x;
         float fy = y;
 
-        switch (Application.platform)
-        {
+        switch (Application.platform) {
             case RuntimePlatform.WindowsEditor:
             case RuntimePlatform.WindowsPlayer:
             case RuntimePlatform.WindowsWebPlayer:
@@ -255,58 +220,46 @@ public class ActionBarRow : MonoBehaviour
         transform.position = new Vector3(fx, fy, 1);
     }
 
-    void InitButtons()
-    {
+    void InitButtons() {
         ActionBarButton[] newButtons = new ActionBarButton[buttonSettings.Length];
 
-        if (newButtons.Length > buttons.Length)
-        {
-            for (int i = 0; i < buttons.Length; ++i)
-            {
+        if (newButtons.Length > buttons.Length) {
+            for (int i = 0; i < buttons.Length; ++i) {
                 newButtons[i] = buttons[i];
             }
 
-            for (int i = buttons.Length; i < newButtons.Length; ++i)
-            {
+            for (int i = buttons.Length; i < newButtons.Length; ++i) {
                 newButtons[i] = CreateButton();
             }
-        }
-        else
-        {
-            for (int i = 0; i < newButtons.Length; ++i)
-            {
+
+        } else {
+            for (int i = 0; i < newButtons.Length; ++i) {
                 newButtons[i] = buttons[i];
             }
 
-            for (int i = newButtons.Length; i < buttons.Length; ++i)
-            {
+            for (int i = newButtons.Length; i < buttons.Length; ++i) {
                 GameObject.Destroy(buttons[i]);
             }
         }
 
         buttons = newButtons;
 
-        if (ActionBarSettings.Instance.DisplayKeybindings)
-        {
-            for (int i = 0; i < buttons.Length; ++i)
-            {
+        if (ActionBarSettings.Instance.DisplayKeybindings) {
+            for (int i = 0; i < buttons.Length; ++i) {
                 buttons[i].Label = buttonSettings[i].ToString();
             }
         }
     }
 
-    void InitButtonPositions()
-    {
+    void InitButtonPositions() {
         int i = 0;
         int xPos = 0;
         int yPos = 0;
 
-        for (int r = 0; r < buttonRows; ++r)
-        {
+        for (int r = 0; r < buttonRows; ++r) {
             xPos = 0;
 
-            for (int c = 0; c < buttonColumns; ++c)
-            {
+            for (int c = 0; c < buttonColumns; ++c) {
                 buttons[i].transform.localScale = new Vector3(buttonSize, buttonSize, buttonSize);
                 buttons[i].transform.localPosition = new Vector3(xPos, yPos, 0);
 
@@ -318,11 +271,10 @@ public class ActionBarRow : MonoBehaviour
         }
     }
 
-    ActionBarButton CreateButton()
-    {
+    ActionBarButton CreateButton() {
         // Create our new game object
         GameObject go = new GameObject("ActionBarButton");
-            
+
         // Add components
         go.AddComponent<MeshFilter>();
         go.AddComponent<MeshRenderer>();
@@ -335,12 +287,10 @@ public class ActionBarRow : MonoBehaviour
         return button;
     }
 
-    Vector2 CalculateAnchorScreenPosition()
-    {
+    Vector2 CalculateAnchorScreenPosition() {
         Vector2 position = Vector2.zero;
 
-        switch (anchorPoint)
-        {
+        switch (anchorPoint) {
             case ActionBarRowAnchorPoint.BottomLeft:
                 position.y = -(Screen.height / 2) + Height;
                 position.x = -(Screen.width / 2);

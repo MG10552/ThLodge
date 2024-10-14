@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
-public class ActionBarCooldownDoneAnimator : MonoBehaviour
-{
+
+public class ActionBarCooldownDoneAnimator : MonoBehaviour {
     float startTime;
     Color color;
 
@@ -11,8 +11,7 @@ public class ActionBarCooldownDoneAnimator : MonoBehaviour
     public float ScaleTo = 3f;
     public float Rotations = 1f;
 
-    void Start()
-    {
+    void Start() {
         startTime = Time.time;
 
         GetComponent<Renderer>().material = new Material(GetComponent<Renderer>().material);
@@ -22,8 +21,7 @@ public class ActionBarCooldownDoneAnimator : MonoBehaviour
         GameObject.Destroy(gameObject, Duration);
     }
 
-    void Update()
-    {
+    void Update() {
         float t = ((Time.time - startTime) / Duration);
         float s = Mathf.Lerp(ScaleFrom, ScaleTo, t);
 

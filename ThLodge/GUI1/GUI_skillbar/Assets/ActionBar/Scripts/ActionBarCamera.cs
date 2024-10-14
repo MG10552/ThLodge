@@ -1,16 +1,13 @@
 using UnityEngine;
 
+
 [ExecuteInEditMode]
-public class ActionBarCamera : MonoBehaviour
-{
+public class ActionBarCamera: MonoBehaviour {
     static ActionBarCamera instance = null;
 
-    public static ActionBarCamera Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
+    public static ActionBarCamera Instance {
+        get {
+            if (instance == null) {
                 instance = FindObjectOfType(typeof(ActionBarCamera)) as ActionBarCamera;
             }
 
@@ -21,13 +18,11 @@ public class ActionBarCamera : MonoBehaviour
     [SerializeField]
     float viewArea = 500f;
 
-    void Start()
-    {
-        if (!GetComponent<Camera>())
-        {
+    void Start() {
+        if (!GetComponent<Camera>()) {
             gameObject.AddComponent<Camera>();
         }
-        
+
         instance = this;
         GetComponent<Camera>().orthographic = true;
         GetComponent<Camera>().nearClipPlane = 0;
@@ -35,29 +30,24 @@ public class ActionBarCamera : MonoBehaviour
         GetComponent<Camera>().depth = 1;
         GetComponent<Camera>().clearFlags = CameraClearFlags.Depth;
         GetComponent<Camera>().cullingMask = 1 << gameObject.layer;
-        transform.position = new Vector3(0, 0, -(viewArea/2f));
+        transform.position = new Vector3(0, 0, -(viewArea / 2f));
     }
 
-    void Awake()
-    {
+    void Awake() {
         Start();
     }
 
-    void OnEnable()
-    {
+    void OnEnable() {
         Start();
     }
 
-    void Update()
-    {
-        if (GetComponent<Camera>())
-        {
+    void Update() {
+        if (GetComponent<Camera>()) {
             GetComponent<Camera>().orthographicSize = Screen.height / 2;
         }
     }
 
-    void OnRenderObject()
-    {
+    void OnRenderObject() {
         Update();
     }
 }

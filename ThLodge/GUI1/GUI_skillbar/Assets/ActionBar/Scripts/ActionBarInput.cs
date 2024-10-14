@@ -1,19 +1,18 @@
 using UnityEngine;
 using System.Collections;
 using System.Linq;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
+using System.Resources;
+using System.Runtime.Remoting.Messaging;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
-public class ActionBarInput : MonoBehaviour
-{
+public class ActionBarInput : MonoBehaviour {
     static ActionBarInput instance = null;
 
-    public static ActionBarInput Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
+    public static ActionBarInput Instance {
+        get {
+            if (instance == null) {
                 instance = FindObjectOfType(typeof(ActionBarInput)) as ActionBarInput;
                 instance.Start();
             }
@@ -52,10 +51,8 @@ public class ActionBarInput : MonoBehaviour
     ActionBarButton pickupButton = null;
     ActionBarDescriptor pickupDescriptor = null;
 
-    void Start()
-    {
-        if (mesh == null)
-        {
+    void Start() {
+        if (mesh == null) {
             Mesh quad = Resources.Load("ActionBarButtonQuad") as Mesh;
 
             mesh = GetComponent<MeshFilter>().mesh;
@@ -71,8 +68,7 @@ public class ActionBarInput : MonoBehaviour
         }
     }
 
-    void Update()
-    {
+    void Update() {
         LeftAlt_Up = Input.GetKey(KeyCode.LeftAlt);
         LeftShift_Up = Input.GetKey(KeyCode.LeftShift);
         LeftCtrl_Up = Input.GetKey(KeyCode.LeftControl);
@@ -101,8 +97,7 @@ public class ActionBarInput : MonoBehaviour
         PositionInput();
     }
 
-    void PositionInput()
-    {
+    void PositionInput() {
         // Mouse position
         Vector3 mpos = Input.mousePosition;
 
@@ -114,17 +109,12 @@ public class ActionBarInput : MonoBehaviour
         );
     }
 
-    void PickupInput()
-    {
-        if (Input.GetMouseButtonDown(0) && pickupDescriptor == null)
-        {
+    void PickupInput() {
+        if (Input.GetMouseButtonDown(0) && pickupDescriptor == null) {
             // Try to find a button
-            if (RaycastButton(out pickupButton))
-            {
-                if (!pickupButton.Empty)
-                {
-                    if (!pickupButton.Locked || pickupButton.CloneOnPickup)
-                    {
+            if (RaycastButton(out pickupButton)) {
+                if (!pickupButton.Empty) {
+                    if (!pickupButton.Locked || pickupButton.CloneOnPickup) {
                         pickupPosition = Input.mousePosition;
                     }
                 }
@@ -132,44 +122,33 @@ public class ActionBarInput : MonoBehaviour
                 // Toggle that we're pressing this button and an overlay
                 pickupButton.Pressed = true;
                 pickupButton.Overlay = true;
-            }
-            else
-            {
+            } else {
                 ClearPickup();
             }
         }
 
-        if (Input.GetMouseButton(0) && pickupButton != null && pickupButton.Descriptor != null)
-        {
-            if (Vector3.Distance(Input.mousePosition, pickupPosition) >= ActionBarSettings.Instance.ButtonPickupDistance)
-            {
+        if (Input.GetMouseButton(0) && pickupButton != null && pickupButton.Descriptor != null) {
+            if (Vector3.Distance(Input.mousePosition, pickupPosition) >= ActionBarSettings.Instance.ButtonPickupDistance) {
                 // We're not pressing or need an overlay anymore
                 pickupButton.Overlay = false;
                 pickupButton.Pressed = false;
 
                 // Pickup descriptor
-                if (pickupButton.CloneOnPickup)
-                {
+                if (pickupButton.CloneOnPickup) {
                     Pickup(pickupButton.Descriptor);
-                }
-                else
-                {
+                } else {
                     Pickup(pickupButton.RemoveDescriptor());
                 }
             }
         }
 
-        if (Input.GetMouseButtonUp(0))
-        {
+        if (Input.GetMouseButtonUp(0)) {
             // Click
-            if (pickupDescriptor == null && pickupButton != null)
-            {
+            if (pickupDescriptor == null && pickupButton != null) {
                 ActionBarButton button;
 
-                if (RaycastButton(out button))
-                {
-                    if (button == pickupButton)
-                    {
+                if (RaycastButton(out button)) {
+                    if (button == pickupButton) {
                         pickupButton.Press();
                     }
                 }
@@ -183,34 +162,27 @@ public class ActionBarInput : MonoBehaviour
             }
 
             // Picked up
-            else
-            {
+            else {
                 PlacePickedup();
             }
         }
     }
 
-    void PlacePickedup()
-    {
+    void PlacePickedup() {
         ActionBarButton button;
 
-        if (pickupDescriptor != null && RaycastButton(out button))
-        {
-            if (button.Locked || button.Row.Excludes(pickupDescriptor.ItemGroup) || (pickupButton != null && button.Row.Excludes(pickupButton.ItemGroup)))
-            {
+        if (pickupDescriptor != null && RaycastButton(out button)) {
+            if (button.Locked || button.Row.Excludes(pickupDescriptor.ItemGroup) || (pickupButton != null && button.Row.Excludes(pickupButton.ItemGroup))) {
                 // Return button
-                if (pickupButton != null)
-                {
+                if (pickupButton != null) {
                     pickupButton.SetDescriptor(pickupDescriptor);
                 }
 
                 // Clear
                 ClearPickup();
-            }
-            else
-            {
-                if (button.Empty)
-                {
+
+            } else {
+                if (button.Empty) {
                     // Check if we need to clone this
                     DecloneWithinGroup(pickupButton, button, pickupDescriptor);
 
@@ -219,32 +191,26 @@ public class ActionBarInput : MonoBehaviour
 
                     // Clear
                     ClearPickup();
-                }
-                else
-                {
-                    // Descriptor already on the button
-                    if (ReferenceEquals(button.Descriptor, pickupDescriptor))
-                    {
-                        ClearPickup();
-                    }
 
-                    // Only if we're not putting a one back in the same place
-                    else
-                    {
+                } else {
+                    // Descriptor already on the button
+                    if (ReferenceEquals(button.Descriptor, pickupDescriptor)) {
+                        ClearPickup();
+                    
+                    } else {
+                        // Only if we're not putting a one back in the same place
                         // Check if we need to clone this
                         DecloneWithinGroup(pickupButton, button, pickupDescriptor);
 
                         // Check if we can stack this shit!
-                        if (button.Descriptor.Stackable && pickupDescriptor.Stackable && button.Descriptor.ItemGroup == pickupDescriptor.ItemGroup && button.Descriptor.ItemType == pickupDescriptor.ItemType)
-                        {
+                        if (button.Descriptor.Stackable && pickupDescriptor.Stackable && button.Descriptor.ItemGroup == pickupDescriptor.ItemGroup && button.Descriptor.ItemType == pickupDescriptor.ItemType) {
                             // Add one to stack
                             button.Descriptor.Stack += pickupDescriptor.Stack;
 
                             // Remove
                             ClearPickup();
-                        }
-                        else
-                        {
+
+                        } else {
                             // Switch the descriptor and pickup the old one
                             Pickup(button.SetDescriptor(pickupDescriptor));
 
@@ -255,31 +221,28 @@ public class ActionBarInput : MonoBehaviour
                     }
                 }
             }
-        }
-        else
-        {
+
+        } else {
             // Clear
             ClearPickup();
         }
     }
 
-    bool RaycastButton(out ActionBarButton button)
-    {
+    bool RaycastButton(out ActionBarButton button) {
         Ray ray = ActionBarCamera.Instance.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, float.MaxValue, 1 << gameObject.layer))
-        {
+        if (Physics.Raycast(ray, out hit, float.MaxValue, 1 << gameObject.layer)) {
             button = hit.transform.GetComponent<ActionBarButton>();
             return button != null;
         }
 
         button = null;
+
         return false;
     }
 
-    void SetIcon(int atlasIndex, int iconIndex, int size)
-    {
+    void SetIcon(int atlasIndex, int iconIndex, int size) {
         float iconScale = 1f / ActionBarSettings.Instance.AtlasSize;
         int atlasSize = ActionBarSettings.Instance.AtlasSize;
 
@@ -292,8 +255,7 @@ public class ActionBarInput : MonoBehaviour
         GetComponent<Renderer>().material.SetFloat("_IconScale", iconScale);
 
         // Set icon data
-        for (int i = 0; i < 4; ++i)
-        {
+        for (int i = 0; i < 4; ++i) {
             colors[i].a = (1f / atlasSize) * (iconIndex / atlasSize);
             colors[i].g = (1f / atlasSize) * (iconIndex % atlasSize);
         }
@@ -301,8 +263,7 @@ public class ActionBarInput : MonoBehaviour
         mesh.colors = colors;
     }
 
-    void ClearPickup()
-    {
+    void ClearPickup() {
         //pickupIn = 0;
         pickupButton = null;
         pickupDescriptor = null;
@@ -310,28 +271,22 @@ public class ActionBarInput : MonoBehaviour
         GetComponent<Renderer>().enabled = false;
     }
 
-    void DecloneWithinGroup(ActionBarButton from, ActionBarButton to, ActionBarDescriptor descriptor)
-    {
-        if (to.Row.RemoveCloneWithinGroup && descriptor.Buttons.Count > 0 && descriptor.ItemGroup == to.ItemGroup)
-        {
-            foreach (ActionBarButton button in descriptor.Buttons.ToArray())
-            {
-                if (button.ItemGroup == to.ItemGroup)
-                {
+    void DecloneWithinGroup(ActionBarButton from, ActionBarButton to, ActionBarDescriptor descriptor) {
+        if (to.Row.RemoveCloneWithinGroup && descriptor.Buttons.Count > 0 && descriptor.ItemGroup == to.ItemGroup) {
+            foreach (ActionBarButton button in descriptor.Buttons.ToArray()) {
+                if (button.ItemGroup == to.ItemGroup) {
                     button.RemoveDescriptor();
                 }
             }
         }
     }
 
-    public void Pickup(ActionBarDescriptor descriptor)
-    {
+    public void Pickup(ActionBarDescriptor descriptor) {
         pickupDescriptor = descriptor;
         SetIcon(descriptor.Atlas, descriptor.Icon, 64);
     }
 
-    public static bool CheckModifierKeys_Up(ActionBarModifierKeys mod)
-    {
+    public static bool CheckModifierKeys_Up(ActionBarModifierKeys mod) {
         return
             ((mod & ActionBarModifierKeys.LeftAlt) == ActionBarModifierKeys.LeftAlt) == LeftAlt_Up &&
             ((mod & ActionBarModifierKeys.LeftShift) == ActionBarModifierKeys.LeftShift) == LeftShift_Up &&
@@ -345,8 +300,7 @@ public class ActionBarInput : MonoBehaviour
             ((mod & ActionBarModifierKeys.RightWindows) == ActionBarModifierKeys.RightWindows) == RightWindows_Up;
     }
 
-    public static bool CheckModifierKeys_Down(ActionBarModifierKeys mod)
-    {
+    public static bool CheckModifierKeys_Down(ActionBarModifierKeys mod) {
         return
             ((mod & ActionBarModifierKeys.LeftAlt) == ActionBarModifierKeys.LeftAlt) == LeftAlt_Down &&
             ((mod & ActionBarModifierKeys.LeftShift) == ActionBarModifierKeys.LeftShift) == LeftShift_Down &&

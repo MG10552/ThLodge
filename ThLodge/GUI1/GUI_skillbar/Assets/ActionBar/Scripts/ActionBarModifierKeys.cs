@@ -1,6 +1,5 @@
 [System.Flags]
-public enum ActionBarModifierKeys
-{
+public enum ActionBarModifierKeys {
     LeftAlt = 1,
     LeftCtrl = 2,
     LeftShift = 4,

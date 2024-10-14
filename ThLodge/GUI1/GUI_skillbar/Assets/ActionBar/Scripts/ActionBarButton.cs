@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections;
+using static System.Net.Mime.MediaTypeNames;
+
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
-public class ActionBarButton : MonoBehaviour
-{
+public class ActionBarButton: MonoBehaviour {
     Mesh mesh;
     Color[] colors = new Color[4] { Color.black, Color.black, Color.black, Color.black };
     Vector3[] normals = new Vector3[4] { Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };
@@ -15,51 +16,39 @@ public class ActionBarButton : MonoBehaviour
     bool onCooldown = false;
     ActionBarRow row;
 
-    public string Label
-    {
+    public string Label {
         get { return label ? "" : label.Sentance; }
-        set
-        {
+        set {
             InitLabel();
             label.SetText(value ?? "");
         }
     }
 
-    public int Stack
-    {
+    public int Stack {
         get { return stack ? 0 : System.Int32.Parse(stack.Sentance); }
-        set
-        {
+        set {
             InitStack();
 
-            if (value == 1 && !ActionBarSettings.Instance.DisplayOneStacks)
-            {
+            if (value == 1 && !ActionBarSettings.Instance.DisplayOneStacks) {
                 stack.SetText("");
-            }
-            else
-            {
+            } else {
                 stack.SetText(value.ToString());
             }
         }
     }
 
-    public bool Pressed
-    {
+    public bool Pressed {
         get;
         set;
     }
 
-    public bool Overlay
-    {
+    public bool Overlay {
         get { return colors[0].r == 1f; }
-        set
-        {
+        set {
             float v = value ? 1f : 0f;
 
-            if (colors[0].r != v)
-            {
-                for (int i = 0; i < 4; ++i)
-                {
+            if (colors[0].r != v) {
+                for (int i = 0; i < 4; ++i) {
                     colors[i].r = v;
                 }
 
@@ -68,58 +57,44 @@ public class ActionBarButton : MonoBehaviour
         }
     }
 
-    public Color[] Colors
-    {
+    public Color[] Colors {
         get { return colors; }
     }
 
-    public ActionBarDescriptor Descriptor
-    {
+    public ActionBarDescriptor Descriptor {
         get { return descriptor; }
     }
 
-    public ActionBarRow Row
-    {
+    public ActionBarRow Row {
         get { return row; }
     }
 
-    public bool Empty
-    {
+    public bool Empty {
         get { return descriptor == null; }
     }
 
-    public bool CloneOnPickup
-    {
-        get
-        {
+    public bool CloneOnPickup {
+        get {
             return row.CloneOnPickup;
         }
     }
 
-    public int ItemGroup
-    {
-        get
-        {
+    public int ItemGroup {
+        get {
             return row.ItemGroup;
         }
     }
 
-    public bool Locked
-    {
-        get
-        {
+    public bool Locked {
+        get {
             return row.IsLocked;
         }
     }
 
-    void Update()
-    {
-        if (descriptor != null)
-        {
-            if (onCooldown != descriptor.OnCooldown)
-            {
-                if (onCooldown)
-                {
+    void Update() {
+        if (descriptor != null) {
+            if (onCooldown != descriptor.OnCooldown) {
+                if (onCooldown) {
                     GameObject doneInstance = GameObject.Instantiate(ActionBarSettings.Instance.ButtonCooldownDonePrefab) as GameObject;
 
                     doneInstance.layer = gameObject.layer;
@@ -134,29 +109,23 @@ public class ActionBarButton : MonoBehaviour
         }
     }
 
-    void UpdateShaderData()
-    {
-        if (Application.isPlaying)
-        {
+    void UpdateShaderData() {
+        if (Application.isPlaying) {
             mesh.colors = colors;
             mesh.normals = normals;
             mesh.uv2 = uv1;
         }
     }
 
-    void SetIcon(int atlas, int icon)
-    {
-        if (icon < ActionBarSettings.Instance.IconsPerAtlas && atlas < ActionBarSettings.Instance.AtlasMaterials.Length)
-        {
+    void SetIcon(int atlas, int icon) {
+        if (icon < ActionBarSettings.Instance.IconsPerAtlas && atlas < ActionBarSettings.Instance.AtlasMaterials.Length) {
             GetComponent<Renderer>().sharedMaterial = ActionBarSettings.Instance.GetAtlasMaterial(atlas);
 
             // Only do this if we actually get a material
-            if (GetComponent<Renderer>().sharedMaterial != null)
-            {
+            if (GetComponent<Renderer>().sharedMaterial != null) {
                 int atlasSize = ActionBarSettings.Instance.AtlasSize;
 
-                for (int i = 0; i < 4; ++i)
-                {
+                for (int i = 0; i < 4; ++i) {
                     colors[i].r = 0f;
                     colors[i].b = 1f;
                     colors[i].g = (1f / atlasSize) * (icon % atlasSize);
@@ -168,14 +137,11 @@ public class ActionBarButton : MonoBehaviour
         }
     }
 
-    public void SetGrayscale(float value)
-    {
+    public void SetGrayscale(float value) {
         value = Mathf.Clamp01(value);
 
-        if (normals[0].x != value)
-        {
-            for (int i = 0; i < 4; ++i)
-            {
+        if (normals[0].x != value) {
+            for (int i = 0; i < 4; ++i) {
                 normals[i].x = value;
             }
 
@@ -183,12 +149,9 @@ public class ActionBarButton : MonoBehaviour
         }
     }
 
-    public void SetCooldown(float start, float duration)
-    {
-        if (uv1[0].x != start || uv1[0].y != duration)
-        {
-            for (int i = 0; i < 4; ++i)
-            {
+    public void SetCooldown(float start, float duration) {
+        if (uv1[0].x != start || uv1[0].y != duration) {
+            for (int i = 0; i < 4; ++i) {
                 uv1[i].x = start;
                 uv1[i].y = duration;
             }
@@ -197,10 +160,8 @@ public class ActionBarButton : MonoBehaviour
         }
     }
 
-    public ActionBarDescriptor SetDescriptor(ActionBarDescriptor desc)
-    {
-        if (desc == null)
-        {
+    public ActionBarDescriptor SetDescriptor(ActionBarDescriptor desc) {
+        if (desc == null) {
             return null;
         }
 
@@ -214,39 +175,31 @@ public class ActionBarButton : MonoBehaviour
         SetCooldown(desc.CooldownStart, desc.Cooldown);
         SetGrayscale(descriptor.Disabled ? 1f : 0f);
 
-        if (desc.Stackable)
-        {
+        if (desc.Stackable) {
             InitStack();
             Stack = desc.Stack;
             stack.gameObject.active = true;
-        }
-        else
-        {
-            if (stack != null)
-            {
+        } else {
+            if (stack != null) {
                 stack.gameObject.active = false;
             }
         }
 
-        if (temp != null)
-        {
+        if (temp != null) {
             temp.Buttons.Remove(this);
         }
 
         return temp;
     }
 
-    public ActionBarDescriptor RemoveDescriptor()
-    {
-        for (int i = 0; i < 4; ++i)
-        {
+    public ActionBarDescriptor RemoveDescriptor() {
+        for (int i = 0; i < 4; ++i) {
             colors[i].b = 0f;
         }
 
         UpdateShaderData();
 
-        if (stack != null)
-        {
+        if (stack != null) {
             stack.gameObject.active = false;
         }
 
@@ -256,10 +209,8 @@ public class ActionBarButton : MonoBehaviour
         return tmp;
     }
 
-    public void Init(ActionBarRow row)
-    {
-        if (mesh == null)
-        {
+    public void Init(ActionBarRow row) {
+        if (mesh == null) {
             this.row = row;
             gameObject.layer = row.Layer;
 
@@ -283,15 +234,12 @@ public class ActionBarButton : MonoBehaviour
         }
     }
 
-    public void Press()
-    {
+    public void Press() {
         descriptor.Invoke();
     }
 
-    void InitLabel()
-    {
-        if (!label)
-        {
+    void InitLabel() {
+        if (!label) {
             GameObject labelGo = new GameObject("TextLabel");
             labelGo.layer = row.Layer;
             labelGo.transform.parent = transform;
@@ -303,10 +251,8 @@ public class ActionBarButton : MonoBehaviour
         }
     }
 
-    void InitStack()
-    {
-        if (!stack)
-        {
+    void InitStack() {
+        if (!stack) {
             GameObject stackGo = new GameObject("TextLabel");
             stackGo.layer = row.Layer;
             stackGo.transform.parent = transform;
@@ -318,8 +264,7 @@ public class ActionBarButton : MonoBehaviour
         }
     }
 
-    void InitCooldown()
-    {
+    void InitCooldown() {
 
     }
 }

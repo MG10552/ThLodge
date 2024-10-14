@@ -1,16 +1,14 @@
 using UnityEngine;
 using System.Collections;
+using System.Resources;
+using System.Runtime.Remoting.Messaging;
 
-public class ActionBarSettings : MonoBehaviour
-{
+public class ActionBarSettings : MonoBehaviour {
     static ActionBarSettings instance = null;
 
-    public static ActionBarSettings Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
+    public static ActionBarSettings Instance {
+        get {
+            if (instance == null) {
                 instance = FindObjectOfType(typeof(ActionBarSettings)) as ActionBarSettings;
             }
 
@@ -22,7 +20,7 @@ public class ActionBarSettings : MonoBehaviour
     public Texture2D ButtonTexture;
 
     [SerializeField]
-    public Color ButtonOverlayColor = new Color(118f/255f, 186f/255f, 255f/255f);
+    public Color ButtonOverlayColor = new Color(118f / 255f, 186f / 255f, 255f / 255f);
 
     [SerializeField]
     public float ButtonCooldownDarkness = 0.75f;
@@ -93,31 +91,25 @@ public class ActionBarSettings : MonoBehaviour
     [HideInInspector]
     public Material[] AtlasMaterials;
 
-    public int IconsPerAtlas
-    {
+    public int IconsPerAtlas {
         get { return AtlasSize * AtlasSize; }
     }
 
-    void Start()
-    {
+    void Start() {
         Init();
     }
 
-    void Awake()
-    {
+    void Awake() {
         Init();
     }
 
-    void Init()
-    {
-        if (AtlasMaterials.Length != AtlasTextures.Length)
-        {
+    void Init() {
+        if (AtlasMaterials.Length != AtlasTextures.Length) {
             ButtonPickupDistance = Mathf.RoundToInt(ButtonPickupDistance);
             AtlasMaterials = new Material[AtlasTextures.Length];
             Shader shader = Resources.Load("ActionBarShader", typeof(Shader)) as Shader;
 
-            for (int i = 0; i < AtlasMaterials.Length; ++i)
-            {
+            for (int i = 0; i < AtlasMaterials.Length; ++i) {
                 AtlasMaterials[i] = new Material(shader);
                 AtlasMaterials[i].SetTexture("_Button", ButtonTexture);
                 AtlasMaterials[i].SetTexture("_Atlas", AtlasTextures[i]);
@@ -127,46 +119,36 @@ public class ActionBarSettings : MonoBehaviour
         }
     }
 
-    public Material GetAtlasMaterial(int index)
-    {
+    public Material GetAtlasMaterial(int index) {
         Init();
 
-        if (index < AtlasMaterials.Length)
-        {
+        if (index < AtlasMaterials.Length) {
             return AtlasMaterials[index];
         }
 
         return default(Material);
     }
 
-    public void PlayPressSound()
-    {
-        if (ButtonAudioSource != null && ButtonSuccessfullPressSound != null)
-        {
+    public void PlayPressSound() {
+        if (ButtonAudioSource != null && ButtonSuccessfullPressSound != null) {
             ButtonAudioSource.PlayOneShot(ButtonSuccessfullPressSound);
         }
     }
 
-    public void PlayDisabledSound()
-    {
-        if (ButtonAudioSource != null && ButtonDisabledPressSound != null)
-        {
+    public void PlayDisabledSound() {
+        if (ButtonAudioSource != null && ButtonDisabledPressSound != null) {
             ButtonAudioSource.PlayOneShot(ButtonDisabledPressSound);
         }
     }
 
-    public void PlayCooldownSound()
-    {
-        if (ButtonAudioSource != null && ButtonCooldownPressSound != null)
-        {
+    public void PlayCooldownSound() {
+        if (ButtonAudioSource != null && ButtonCooldownPressSound != null) {
             ButtonAudioSource.PlayOneShot(ButtonCooldownPressSound);
         }
     }
 
-    public void PlayCooldownDoneSound()
-    {
-        if (ButtonAudioSource != null && ButtonCooldownDoneSound != null)
-        {
+    public void PlayCooldownDoneSound() {
+        if (ButtonAudioSource != null && ButtonCooldownDoneSound != null) {
             ButtonAudioSource.PlayOneShot(ButtonCooldownDoneSound);
         }
     }

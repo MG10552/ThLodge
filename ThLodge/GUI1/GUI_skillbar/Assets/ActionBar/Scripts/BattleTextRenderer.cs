@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections;
+using System.Diagnostics;
 
-public class BattleTextRenderer : MonoBehaviour
-{
+
+public class BattleTextRenderer : MonoBehaviour {
     Mesh mesh;
     BattleTextFont font;
     BattleTextSentance sentance;
@@ -21,13 +22,11 @@ public class BattleTextRenderer : MonoBehaviour
     public Color Color = Color.white;
     public BattleTextFont.DefinitionType FontDefinitionType = BattleTextFont.DefinitionType.BMFont_XML;
 
-    public string Sentance
-    {
+    public string Sentance {
         get { return sentance.Sentance; }
     }
 
-    public void Init()
-    {
+    public void Init() {
         LockY = false;
         LookAtMainCamera = false;
         AnimateInWorld = false;
@@ -37,8 +36,7 @@ public class BattleTextRenderer : MonoBehaviour
         gameObject.AddComponent<MeshRenderer>();
     }
 
-    void LateUpdate()
-    {
+    void LateUpdate() {
         // Set local scale
         transform.localScale = new Vector3(GlyphSize, GlyphSize, GlyphSize);
 
@@ -63,21 +61,17 @@ public class BattleTextRenderer : MonoBehaviour
         */
     }
 
-    public void SetText(string text)
-    {
+    public void SetText(string text) {
         SetText(ActionBarSettings.Instance.FontDefinition, ActionBarSettings.Instance.FontMaterial, text);
     }
 
-    void SetText(TextAsset fontDefinition, Material fontMaterial, string text)
-    {
-        if (fontDefinition == null)
-        {
+    void SetText(TextAsset fontDefinition, Material fontMaterial, string text) {
+        if (fontDefinition == null) {
             Debug.LogError("[BattleTextRenderer] Parameter 'fontDefinition' was null");
             return;
         }
 
-        if (fontMaterial == null)
-        {
+        if (fontMaterial == null) {
             Debug.LogError("[BattleTextRenderer] Parameter 'fontMaterial' was null");
             return;
         }
@@ -112,17 +106,14 @@ public class BattleTextRenderer : MonoBehaviour
 
         float offset = 0; // -(sentance.CalculateWidth(GlyphSpacing) / 2f);
 
-        for (int gn = 0; gn < gc; ++gn)
-        {
-            if (gn > 0)
-            {
+        for (int gn = 0; gn < gc; ++gn) {
+            if (gn > 0) {
                 offset += GlyphSpacing;
             }
 
             BattleTextGlyph glyph = sentance[gn];
 
             // Vertices
-
             float width = glyph.CalculateWidth(font);
             float height = glyph.CalculateHeight(font);
             float glyphOffset = glyph.CalculateOffset(font);
@@ -133,7 +124,6 @@ public class BattleTextRenderer : MonoBehaviour
             vs[v + 3] = new Vector3(offset + width, -height - glyphOffset);
 
             // Triangles
-
             tris[t + 0] = v + 0;
             tris[t + 1] = v + 1;
             tris[t + 2] = v + 2;
@@ -143,7 +133,6 @@ public class BattleTextRenderer : MonoBehaviour
             tris[t + 3] = v + 1;
 
             // UVs
-
             float x = glyph.X;
             float y = glyph.Y;
             float w = glyph.Width;
@@ -152,8 +141,7 @@ public class BattleTextRenderer : MonoBehaviour
             float top = ts - y;
             float right = x + w;
 
-            if (IsAnimated)
-            {
+            if (IsAnimated) {
                 // Magic :)
                 uvs[v + 0] = new Vector2(x / ts, time);
                 uvs[v + 1] = new Vector2(right / ts, time);
@@ -164,9 +152,7 @@ public class BattleTextRenderer : MonoBehaviour
                 clr[v + 1] = new Color(r, g, b, top / ts);
                 clr[v + 2] = new Color(r, g, b, (top - h) / ts);
                 clr[v + 3] = new Color(r, g, b, (top - h) / ts);
-            }
-            else
-            {
+            } else {
                 uvs[v + 0] = new Vector2(x / ts, top / ts);
                 uvs[v + 1] = new Vector2(right / ts, top / ts);
                 uvs[v + 2] = new Vector2(x / ts, (top - h) / ts);
@@ -179,7 +165,6 @@ public class BattleTextRenderer : MonoBehaviour
             }
 
             // Increment for next
-
             t += 6;
             v += 4;
             u += 4;
