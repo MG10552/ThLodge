@@ -3,26 +3,23 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnitySampleAssets.CrossPlatformInput;
+using static System.Net.Mime.MediaTypeNames;
 
-[RequireComponent(typeof (Image))]
-public class TouchPad : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
-{
+
+[RequireComponent(typeof(Image))]
+public class TouchPad: MonoBehaviour, IPointerDownHandler, IPointerUpHandler {
     // Options for which axes to use
-    public enum AxisOption
-    {
+    public enum AxisOption {
         Both,           // Use both
         OnlyHorizontal, // Only horizontal
         OnlyVertical    // Only vertical
     }
 
-
-    public enum ControlStyle
-    {
+    public enum ControlStyle {
         Absolute,   // operates from teh center of the image
         Relative,   // operates from the center of the initial touch
         Swipe,      // swipe to touch touch no maintained center
     }
-
 
     public AxisOption axesToUse = AxisOption.Both;              // The options for the axes that the still will use
     public ControlStyle controlStyle = ControlStyle.Absolute;   // control style to use
@@ -30,7 +27,6 @@ public class TouchPad : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
     public string verticalAxisName = "Vertical";                // The name given to the vertical axis for the cross platform input
     public float Xsensitivity = 1f;
     public float Ysensitivity = 1f;
-
 
     private Vector3 m_StartPos;
     private Vector2 m_PreviousDelta;
@@ -52,8 +48,7 @@ public class TouchPad : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
 #endif
 
 
-    private void OnEnable()
-    {
+    private void OnEnable() {
         CreateVirtualAxes();
 #if !UNITY_EDITOR
         m_Image = GetComponent<Image>();
@@ -62,43 +57,36 @@ public class TouchPad : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
     }
 
 
-    private void CreateVirtualAxes()
-    {
+    private void CreateVirtualAxes() {
         // set axes to use
         m_UseX = (axesToUse == AxisOption.Both || axesToUse == AxisOption.OnlyHorizontal);
         m_UseY = (axesToUse == AxisOption.Both || axesToUse == AxisOption.OnlyVertical);
 
         // create new axes based on axes to use
-        if (m_UseX)
-        {
+        if (m_UseX) {
             m_HorizontalVirtualAxis = new CrossPlatformInputManager.VirtualAxis(horizontalAxisName);
             CrossPlatformInputManager.RegisterVirtualAxis(m_HorizontalVirtualAxis);
         }
-        if (m_UseY)
-        {
+        if (m_UseY) {
             m_VerticalVirtualAxis = new CrossPlatformInputManager.VirtualAxis(verticalAxisName);
             CrossPlatformInputManager.RegisterVirtualAxis(m_VerticalVirtualAxis);
         }
     }
 
 
-    private void UpdateVirtualAxes(Vector3 value)
-    {
+    private void UpdateVirtualAxes(Vector3 value) {
         value = value.normalized;
-        if (m_UseX)
-        {
+        if (m_UseX) {
             m_HorizontalVirtualAxis.Update(value.x);
         }
 
-        if (m_UseY)
-        {
+        if (m_UseY) {
             m_VerticalVirtualAxis.Update(value.y);
         }
     }
 
 
-    public void OnPointerDown(PointerEventData data)
-    {
+    public void OnPointerDown(PointerEventData data) {
         m_Dragging = true;
         m_Id = data.pointerId;
 #if !UNITY_EDITOR
@@ -108,14 +96,11 @@ public class TouchPad : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
     }
 
 
-    private void Update()
-    {
-        if (!m_Dragging)
-        {
+    private void Update() {
+        if (!m_Dragging) {
             return;
         }
-        if (Input.touchCount >= m_Id+1 && m_Id != -1)
-        {
+        if (Input.touchCount >= m_Id + 1 && m_Id != -1) {
 #if !UNITY_EDITOR
 
             if (controlStyle == ControlStyle.Swipe)
@@ -136,9 +121,7 @@ public class TouchPad : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
         }
     }
 
-
-    public void OnPointerUp(PointerEventData data)
-    {
+    public void OnPointerUp(PointerEventData data) {
         m_Dragging = false;
         m_Id = -1;
         UpdateVirtualAxes(Vector3.zero);

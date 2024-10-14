@@ -1,15 +1,14 @@
 using System;
+using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using UnityEngine;
 
 
-namespace UnitySampleAssets.CrossPlatformInput
-{
+namespace UnitySampleAssets.CrossPlatformInput {
     [ExecuteInEditMode]
-    public class MobileControlRig : MonoBehaviour
-    {
+    public class MobileControlRig : MonoBehaviour {
         // this script enables or disables the child objects of a control rig
         // depending on whether the USE_MOBILE_INPUT define is declared.
 
@@ -21,45 +20,35 @@ namespace UnitySampleAssets.CrossPlatformInput
 	{
 		CheckEnableControlRig();
 	}
-	#endif
+#endif
 
 #if UNITY_EDITOR
 
-        private void OnEnable()
-        {
+        private void OnEnable() {
             EditorUserBuildSettings.activeBuildTargetChanged += Update;
             EditorApplication.update += Update;
         }
 
-
-        private void OnDisable()
-        {
+        private void OnDisable() {
             EditorUserBuildSettings.activeBuildTargetChanged -= Update;
             EditorApplication.update -= Update;
         }
 
-
-        private void Update()
-        {
+        private void Update() {
             CheckEnableControlRig();
         }
 #endif
 
-
-        private void CheckEnableControlRig()
-        {
+        private void CheckEnableControlRig() {
 #if MOBILE_INPUT
 		EnableControlRig(true);
-		#else
+#else
             EnableControlRig(false);
 #endif
         }
 
-
-        private void EnableControlRig(bool enabled)
-        {
-            foreach (Transform t in transform)
-            {
+        private void EnableControlRig(bool enabled) {
+            foreach (Transform t in transform) {
                 t.gameObject.SetActive(enabled);
             }
         }
