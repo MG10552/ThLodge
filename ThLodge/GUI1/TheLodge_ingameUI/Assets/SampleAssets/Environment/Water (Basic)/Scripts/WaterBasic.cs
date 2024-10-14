@@ -1,21 +1,17 @@
 using System;
 using UnityEngine;
 
-namespace UnitySampleAssets.Water
-{
+
+namespace UnitySampleAssets.Water {
     [ExecuteInEditMode]
-    public class WaterBasic : MonoBehaviour
-    {
-        void Update()
-        {
+    public class WaterBasic: MonoBehaviour {
+        void Update() {
             Renderer r = GetComponent<Renderer>();
-            if (!r)
-            {
+            if (!r) {
                 return;
             }
             Material mat = r.sharedMaterial;
-            if (!mat)
-            {
+            if (!mat) {
                 return;
             }
 

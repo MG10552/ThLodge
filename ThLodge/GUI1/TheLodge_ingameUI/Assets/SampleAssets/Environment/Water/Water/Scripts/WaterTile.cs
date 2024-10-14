@@ -1,43 +1,32 @@
 using System;
 using UnityEngine;
 
-namespace UnitySampleAssets.Water
-{
+
+namespace UnitySampleAssets.Water {
     [ExecuteInEditMode]
-    public class WaterTile : MonoBehaviour
-    {
+    public class WaterTile : MonoBehaviour {
         public PlanarReflection reflection;
         public WaterBase waterBase;
 
 
-        public void Start()
-        {
+        public void Start() {
             AcquireComponents();
         }
 
 
-        void AcquireComponents()
-        {
-            if (!reflection)
-            {
-                if (transform.parent)
-                {
+        void AcquireComponents() {
+            if (!reflection) {
+                if (transform.parent) {
                     reflection = transform.parent.GetComponent<PlanarReflection>();
-                }
-                else
-                {
+                } else {
                     reflection = transform.GetComponent<PlanarReflection>();
                 }
             }
 
-            if (!waterBase)
-            {
-                if (transform.parent)
-                {
+            if (!waterBase) {
+                if (transform.parent) {
                     waterBase = transform.parent.GetComponent<WaterBase>();
-                }
-                else
-                {
+                } else {
                     waterBase = transform.GetComponent<WaterBase>();
                 }
             }
@@ -45,21 +34,17 @@ namespace UnitySampleAssets.Water
 
 
 #if UNITY_EDITOR
-        public void Update()
-        {
+        public void Update() {
             AcquireComponents();
         }
 #endif
 
 
-        public void OnWillRenderObject()
-        {
-            if (reflection)
-            {
+        public void OnWillRenderObject() {
+            if (reflection) {
                 reflection.WaterTileBeingRendered(transform, Camera.current);
             }
-            if (waterBase)
-            {
+            if (waterBase) {
                 waterBase.WaterTileBeingRendered(transform, Camera.current);
             }
         }
